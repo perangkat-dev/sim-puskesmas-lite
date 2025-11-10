@@ -1,29 +1,53 @@
-name: Deploy to puskesmaslite.xo.je
+name: Deploy Laravel to InfinityFree (puskesmaslite.xo.je)
 
-# Run manually or on push to the main branch
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy via FTP
     runs-on: ubuntu-latest
+    name: FTP Deploy to InfinityFree
 
     steps:
-      # Step 1: Clone the latest code from GitHub
-      - name: Get latest code
+      # Step 1: Ambil kode terbaru dari repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Upload code via FTP
-      - name: Deploy to puskesmaslite.xo.je via FTP
+      # Step 2: Install dependencies & build vendor di GitHub (bukan di hosting)
+      - name: Install dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
+          php artisan key:generate --force
+
+      # Step 3: Pastikan folder database dan file sqlite ada
+      - name: Ensure SQLite database exists
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      # Step 4: Deploy via FTP
+      - name: Deploy via FTP to InfinityFree
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftpupload.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /puskesmaslite.xo.je/htdocs/  # For addon domains
+          # GANTI sesuai document root domain kamu di InfinityFree
+          server-dir: /puskesmaslite.xo.je/htdocs/
           timeout: 86400000
           log-level: standard
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            **/tests/**
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/views/**
