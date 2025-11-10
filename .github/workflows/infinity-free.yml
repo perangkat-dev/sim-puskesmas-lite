@@ -1,4 +1,4 @@
-name: Deploy to InfinityFree
+name: Deploy to puskesmaslite.xo.je
 
 # Run manually or on push to the main branch
 on:
