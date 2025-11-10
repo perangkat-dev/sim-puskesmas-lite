@@ -18,12 +18,12 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Upload code via FTP
-      - name: Deploy to InfinityFree via FTP
+      - name: Deploy to puskesmaslite.xo.je via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftpupload.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /yourdomain.com/htdocs/  # For addon domains
+          server-dir: /puskesmaslite.xo.je/htdocs/  # For addon domains
           timeout: 86400000
           log-level: standard
